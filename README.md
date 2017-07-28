@@ -1,7 +1,7 @@
-## Solution to Kaggle Planet Challenge#
+## Solution to Kaggle Planet Challenge
 
 
-Refer to [this post](https://medium.com/towards-data-science/my-solution-to-kaggle-planet-challenge-fa554ec16c8c) for a full description of my solution. 
+Please refer to [this post](https://medium.com/towards-data-science/my-solution-to-kaggle-planet-challenge-fa554ec16c8c) for a full description of my solution. 
 
 
 
