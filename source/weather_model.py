@@ -149,7 +149,7 @@ if __name__ == '__main__':
 	# global logger
 	# global target_size
 	# global image_feature_size
-
+	
 	K.set_image_data_format('channels_first')
 	K.image_data_format()
 
@@ -160,7 +160,7 @@ if __name__ == '__main__':
 	create_logger(class_name)
 	current_fold = 0 
 	n_folds = 5
-	num_augmentation_sets_per_fold = 2
+	num_augmentation_sets_per_fold = 1
 
 
 
@@ -347,7 +347,7 @@ if __name__ == '__main__':
 		## doing test predictions 
 		print "Predicting test files"
 		
-		p_test = make_staged_predictions(model,num_parts=5,do_augmentation=True)        
+		p_test = make_staged_predictions(model,num_parts=5,do_augmentation=False)        
 		yfull_test.append(p_test)
 
 		del model # make sure we don't resue weights 

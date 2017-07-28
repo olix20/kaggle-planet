@@ -8,7 +8,6 @@ from operator import itemgetter, attrgetter, methodcaller
 from collections import OrderedDict
 import itertools
 from itertools import chain
-import time 
 
 import pandas as pd
 import PIL
@@ -23,15 +22,13 @@ from sklearn.metrics import confusion_matrix
 import bcolz
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.manifold import TSNE
-from sklearn.model_selection import KFold
 
 from IPython.lib.display import FileLink
-from tqdm import tqdm, tqdm_notebook
-import cv2
-#import theano
-#from theano import shared, tensor as T
-#from theano.tensor.nnet import conv2d, nnet
-#from theano.tensor.signal import pool
+
+import theano
+from theano import shared, tensor as T
+from theano.tensor.nnet import conv2d, nnet
+from theano.tensor.signal import pool
 
 import keras
 from keras import backend as K
@@ -45,75 +42,18 @@ from keras.layers.core import Flatten, Dense, Dropout, Lambda
 #from keras.regularizers import l2, activity_l2, l1, activity_l1
 from keras.layers.normalization import BatchNormalization
 from keras.optimizers import SGD, RMSprop, Adam
-#from keras.utils.layer_utils import layer_from_config
+from keras.utils.layer_utils import layer_from_config
 from keras.metrics import categorical_crossentropy, categorical_accuracy
 from keras.layers.convolutional import *
 from keras.preprocessing import image, sequence
 from keras.preprocessing.text import Tokenizer
-from sklearn.metrics import fbeta_score
-from keras.callbacks import ReduceLROnPlateau, EarlyStopping,ModelCheckpoint
 
-
-#from vgg16 import *
-# from vgg16bn import *
+from vgg16 import *
+from vgg16bn import *
 np.set_printoptions(precision=4, linewidth=100)
 
 
-
-
-
 to_bw = np.array([0.299, 0.587, 0.114])
-
-
-
-def create_base_vgg(extend_top=False,size=(100,100)):
-    model = Vgg16BN(size).model
-
-
-    for i in range (15): #excluding the six 512 blocks at the top, was 15
-        model.pop()
-
-    for l in model.layers:
-        l.trainable = False 
-    
-    
-    if extend_top:
-        for l in get_lrg_layers(): 
-            model.add(l)
-            
-            
-    return model
-
-
-
-def f2_score(y_true, y_pred):
-    # fbeta_score throws a confusing error if inputs are not numpy arrays
-    y_true, y_pred, = np.array(y_true), np.array(y_pred)
-    # We need to use average='samples' here, any other average method will generate bogus results
-    return fbeta_score(y_true, y_pred, beta=2, average='samples')
-
-    
-
-def stretch_n(bands, lower_percent=0, higher_percent=100):
-    # out = np.zeros_like(bands)
-    out = np.zeros_like(bands).astype(np.float32)
-
-    n = bands.shape[2]
-    for i in range(n):
-        a = 0  # np.min(band) # original:  255
-        b = 1  # np.max(band)
-        c = np.percentile(bands[:, :, i], lower_percent)
-        d = np.percentile(bands[:, :, i], higher_percent)
-        t = a + (bands[:, :, i] - c) * (b - a) / (d - c)
-        t[t < a] = a
-        t[t > b] = b
-        out[:, :, i] = t
-
-    return out.astype(np.float32)
-
-
-
-
 def gray(img):
     return np.rollaxis(img,0,3).dot(to_bw)
 def to_plot(img):
@@ -283,8 +223,6 @@ def split_at(model, layer_type):
     layer_idx = [index for index,layer in enumerate(layers)
                  if type(layer) is layer_type][-1]
     return layers[:layer_idx+1], layers[layer_idx+1:]
-
-
 
 
 class MixIterator(object):
